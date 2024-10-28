@@ -1,0 +1,4 @@
+"Grants for VanshSachdeva@localhost"
+"GRANT USAGE ON *.* TO `VanshSachdeva`@`localhost`"
+"GRANT UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, CREATE VIEW, SHOW VIEW, TRIGGER ON `CDACACTS`.`Dept` TO `VanshSachdeva`@`localhost`"
+"GRANT UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, CREATE VIEW, SHOW VIEW, TRIGGER ON `CDACACTS`.`Emp` TO `VanshSachdeva`@`localhost`"

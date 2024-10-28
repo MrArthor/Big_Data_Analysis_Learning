@@ -1,0 +1,44 @@
+02/09/2024
+Faculty Name JaiBheem Gaikwad
+Topic: - Introduction to Shell Programming And All
+
+centos
+installation of centos is same as centos 
+
+we have bourne shell in syllabus
+and in baurne shell we have (sh) or bash ( bourne again shell ) shell
+though there are other sub types of shells are there but not in out syllabus
+
+there is another type of shell as well known as c shell and it is not in out syllabus
+what is shell--> the linux command line provided by a program is called the shell
+
+what is bash script--> a bash script is a series of commans written in a file these are read and xecuted by the bash programthe program exeutes line by line
+
+advantage sof bash 
+1. automation
+2. flexibility
+3. integretiy
+
+
+
+shebang statement aka the first statement of the bash file ex........... T
+
+conditional
+iterative functions ( for while do-while nested lopp)
+
+
+tput command not that usefull but in syllabus so have to read abt it
+basically to relocate and recolor the terminal
+
+
+
+
+
+
+List
+Basic Scripting
+sripting variables
+lab excercise
+conditional statement
+iterative statement
+Shell Meta Characters
