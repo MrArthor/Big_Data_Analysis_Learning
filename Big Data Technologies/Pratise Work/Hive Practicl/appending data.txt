@@ -1,0 +1,28 @@
+**************************Appending data into existing Hive table************************************
+INSERT OVERWRITE example deletes all data from the Hive table and inserts the row specified with the VALUES.
+
+INSERT OVERWRITE TABLE EMP.EMPLOYEE VALUES (11,'Ram',51,'M');
+
+********************Export Table to LOCAL or HDFS******************************
+A. To HDFS Directory******************
+INSERT OVERWRITE DIRECTORY '/user/data/test.txt' 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
+SELECT * FROM listn;
+
+B.********************To Local Dierctory***********************
+INSERT OVERWRITE LOCAL DIRECTORY '/home/cloudera/Desktop/cdac' 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM listn;
+
+****************Customize the custom map/reduce in Hive[mapper or reducer during the execution[-----
+default hive.exec.reducers.bytes.per.reducer is 1G.The default is 1GB, i.e if the input size is 10G, it will use 10 reducers.
+A.In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=15600000 (Bytes)
+B.In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max= [Default Value]: 999   <number>
+C.In order to set a constant number of reducers:Hadoop set this to 1 by default, whereas hive uses -1 as its default value. By setting this     
+   property to -1,      
+  Hive will automatically figure out what should be the number of reducers.
+  set mapreduce.job.reduces= -1 [Default Value: -1]
+
+

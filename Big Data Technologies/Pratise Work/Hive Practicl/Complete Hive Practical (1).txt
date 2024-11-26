@@ -1,0 +1,391 @@
+To clear hive screen : !clear;
+
+Q1. Run the following commands:
+
+1. make a sample.txt
+
+sample .txt
+1, arun
+2, mary
+3, john
+4, priti
+5, neha
+
+2. put it into hdfs
+
+hadoop fs -rm /sample.txt	(Note: if already present remove it using this command.)
+hadoop fs -put sample.txt hdfs:/
+hadoop fs -ls /
+
+
+3. enter into hive shell by typing hive.
+
+4. run the following commands:
+
+hive>show databases;
+hive>create database test;
+hive>show databses;
+hive>use test;
+
+hive>create table sample (id int, name string) row format delimited fields terminated by ',';
+hive>load data inpath '/sample.txt' into table sample;
+hive>select * from sample;
+
+5. Check hive warehouse
+
+hadoop fs -ls /user/hive/warehouse
+hadoop fs -ls /user/hive/warehouse/test.db
+hadoop fs -ls /user/hive/warehouse/test.db/sample/sample.txt
+hadoop fs -cat /user/hive/warehouse/test.db/sample/sample.txt
+
+***********************************************************************************************************************************************************************
+
+Q2. External Table:
+
+Internal Table: default: DROP: tables as well as the orinal input file data gets removed.
+
+External Table: DROP: only the table gets removed not the data.
+
+1. Make practice directory:
+
+hadoop fs -rm -r /practice
+hadoop fs -mkdir /practice
+hadoop fs -put /home/cloudera/Desktop/sample.txt /practice
+
+2. Open hive terminal:
+
+hive>drop table sample;
+hive>select * from sample;
+
+3. Open hdfs terminal:
+
+hadoop fs -ls /
+
+4. Open hive terminal:
+
+Make external table:
+To create external table, simply point to the location of data while creating the tables. 
+This will ensure that the data is not moved into a location inside the warehouse directory.
+hive>create external table info(id int, name string) row format delimited fields terminated by ',' location '/practice';
+
+We do not need load command here because location is already specified in create command.
+hive>select * from info;
+
+Drop this table and check if practie exists in sample directory in hdfs or not.
+hive>drop table info; 
+hive>select * from info;
+
+5. Open hdfs terminal:
+
+hadoop fs -ls /practice
+
+***********************************************************************************************************************************************************************
+
+Q3. Join Command:
+
+Make 2 files as below: emp.txt and email.txt and perform: 
+    a) join
+    b) left outer join
+    c) right outer join
+    d) full outer join
+
+Solution:
+
+1.make emp.txt and email.txt
+
+emp.txt
+Swetha,250000,Chennai
+Anamika,200000,Kanyakumari
+Tarun,300000,Pondi
+Anita,250000,Selam
+
+email.txt
+Swetha,swetha@gmail.com
+Tarun,tarun@edureka.in
+Nagesh,nagesh@yahoo.com
+Venkatesh,veni@gmail.com
+
+2. put it into hdfs
+
+hadoop fs -put emp.txt hdfs:/
+hadoop fs -put email.txt hdfs:/
+hadoop fs -ls /
+
+3. Open hive shell:
+
+hive>create table emp (name string, salary int, loc string) row format delimited fields terminated by ',';
+hive>load data inpath '/emp.txt' into table emp;
+hive>select * from emp;
+
+hive>create table email (name string, email_id string) row format delimited fields terminated by ',';
+hive>load data inpath '/email.txt' into table email;
+hive>select * from email;
+
+hive>set hive.auto.convert.join=false;
+
+hive> select a.name, a.salary, a.loc, b.email_id from emp a join email b on a.name = b.name; 
+hive> select a.name, a.salary, a.loc, b.email_id from emp a left outer join email b on a.name = b.name;
+hive> select a.name, a.salary, a.loc, b.email_id from emp a right outer join email b on a.name = b.name; 
+hive> select a.name, a.salary, a.loc, b.email_id from emp a full join email b on a.name = b.name;
+
+***********************************************************************************************************************************************************************
+
+Q4. Insert Command:
+
+The insert command is used to load the the data Hive table.
+
+- INSERT OVERWRITE is used to overwrite the existing data in the table.
+
+- INSERT INTO is used to append the data into existing data in a table.
+
+1. Create hello.txt
+
+1,A,d1
+2,B,d2
+3,C,d1
+4,D,d2
+5,E,d3
+
+2. open hdfs terminal and put the file 'hello.txt' in hdfs.
+
+hadoop fs -put hello.txt hdfs:/
+cat hello.txt
+
+3. Open hive terminal:
+
+a)Create a table t1 and load the data file 'hello.txt' in t1 (id, name, dept). 
+	hive>create table t1 (id int, name string, dept string) row format delimited fields terminated by ',';
+	hive>load data inpath '/hello.txt' into table t1;
+	hive>select * from t1;
+
+-Run the following commands: (while copying or overwriting column type should match.)
+
+-Create a table t2(don't put any content) and copy the content of table t1 into this table. 
+	hive>create table t2 (id int, name string, dept string) row format delimited fields terminated by ',';
+	hive>insert overwrite table t2 select * from t1; // we are inserting content of t1 into t2
+
+-Check the content by following command
+	hive>select * from t2;
+
+b)Append the content of table t1 to table t2 by following commands:
+	hive>insert into table t2 select * from t1; // we are appending content of t1 into t2
+
+-Check the content by following command:
+	hive>select * from t2;
+
+c)Overwrite the content of table t1 to table t2:
+	hive>insert overwrite table t2 select * from t1; // we are overwriting content of t1 into t2
+
+-Check the content by following command:
+	hive>select * from t2;
+
+***********************************************************************************************************************************************************************
+
+Q5. Partitioning Concept:
+
+Read the following instructions to make partiotions of a table.
+
+1. Make a input file country.txt:
+
+1,a,ind
+2,b,us
+3,c,ind
+4,d,ind
+5,e,us
+6,f,us
+7,g,ind
+
+2. Put it into hdfs:
+
+hadoop fs -put country.txt hdfs:/
+hadoop fs -ls /
+
+
+3. Open hive terminal and create table and load this input file into the table.
+
+hive>create table testsamplestaging (id int, name string, cnty string) row format delimited fields terminated by ',';
+hive>load data inpath '/country.txt' into table testsamplestaging;  
+
+4. Now create another table i.e. we are going to reorganise data into subfolders (folder for 'us' and folder for 'ind')
+   I am partioning my data on cnty based column.
+
+hive>create table testsample (id int, name string) partitioned by (cnty string);
+
+-If I am taking cnty as a partitioning column then I cannot include it as a part of actual table.
+-I am including id and name only. Partioning column cnty is defined in last because it is partitioning column.
+
+5. By default partioning is set to false. So to enable it type the following:
+
+hive>set hive.exec.dynamic.partition.mode=nonstrict;
+
+6. Now move the content of testsamplestaging table to testsample partiotioned by cnty.
+
+hive>insert overwrite table testsample partition(cnty) select id, name, cnty from testsamplestaging;
+
+7. Now follow the step one by one and check your partition in hdfs terminal:
+
+   a) hadoop fs -ls /user/hive/warehouse/test.db
+   b) hadoop fs -ls /user/hive/warehouse/test.db/testsample
+   c) hadoop fs -ls /user/hive/warehouse/test.db/testsample/cnty=ind 
+   d) hadoop fs -cat /user/hive/warehouse/test.db/testsample/cnty=ind/000000_0 
+
+8. Check in hive terminal
+
+hive>select * from testsample where cnty='us';  
+
+***********************************************************************************************************************************************************************
+
+Q6. Bucketing Concept:
+
+create a patitioning and bucketing table;
+
+1. Make a input file txns:
+
+2. Put it into hdfs:
+
+hadoop fs -put txns hdfs:/
+hadoop fs -ls /
+
+
+3. Create table of tansactions file
+   
+hive>create table transaction (txnno int, txndate string, custno int, amount double, product string, category string, city string, state string, spendby string) row format delimited fields terminated by ',';
+  
+hive>load data inpath '/txns' into table transaction;
+
+4. hive>create table txn (txnno int, txndate string, custno int, amount double, product string, city string, state string, spendby string) partitioned by (category string) clustered by (state) into 10 buckets row format delimited fields terminated by ',';
+
+  10 states
+
+3. set the hive properties:
+   
+hive>set hive.exec.dynamic.partition.mode=nonstrict;
+hive>set hive.exec.dynamic.partition=true;
+hive>set hive.enforce.bucketing=true;
+
+4. hive>insert overwrite table txn partition (category) select txnno, txndate, custno, amount, product, category, city, state, spendby from transaction;
+
+Hash function (bucketing column) mod number of buckets
+Hash function (userid) mod 10 
+Hash function (1) mod 10 = 1 mod 10 = 1
+Hash function (2) mod 10 = 2 mod 10 = 2
+Hash function (12) mod 10 = 12 mod 10 = 2
+
+5. Check in warehouse of hive in hdfs terminal:
+
+   a) hadoop fs -ls /user/hive/warehouse/test.db
+   b) hadoop fs -ls /user/hive/warehouse/test.db/txn
+   There will be 10 buckets in each category ... partition will be further divided.
+   c) hadoop fs -ls /user/hive/warehouse/test.db/txn/category=cash
+   d) hadoop fs -cat /user/hive/warehouse/test.db/txn/category=cash/000000_0
+   e) hadoop fs -cat /user/hive/warehouse/test.db/txn/category=credit/000000_0
+
+***********************************************************************************************************************************************************************
+
+Q7. UDF
+UDF allow you to create custom functions to process records or group of records.
+A UDF processes one or several columns of one row and outputs one value. For example:
+
+select lower(str) from table
+For each row in "table," the "lower" UDF takes one argument, the value of "str", and outputs one value, the lower 
+
+Below is the example to create UDF to convert fahrenheit to celcius:
+
+1. Open Eclipse and create java project and inside the class write the following program:
+
+
+import org.apache.hadoop.hive.ql.exec.UDF;
+
+public class ConvertToCelcius extends UDF {
+	public double evaluate(double value) {
+	return (value - 32) / 1.8;
+	}
+}
+
+Also add hive-exec-0.13.1.jar into classpath to resolve compilation.
+Then create jar file of this java project.
+
+2. Make a input file temp:
+
+sunday,28.6
+monday,29.8
+tuesday,21.0
+wednesday,23.7
+thursday,32.2
+friday,20.4
+saturday,31.0
+
+3. Put it into hdfs:
+
+hadoop fs -put temp hdfs:/
+hadoop fs -ls /
+
+
+4. You can invoke an UDF like that:
+
+hive>create table temp (day string, maxtemp double) row format delimited fields terminated by ',';
+hive>load data inpath '/temp' into table temp;
+hive> add jar hiveudf.jar;
+hive> create temporary function fahrenheit_to_celcius as "ConvertToCelcius";
+hive> select fahrenheit_to_celcius(maxtemp) from temp;
+
+fahrenheit_to_celcius -> Function name which you have defined in the previous statement
+(max) -> Passing the argument in fahrenheit temperature through the function 
+
+***********************************************************************************************************************************************************************
+
+Q8. Calling Python Script from hive:
+
+Custom Mapper Code to manipulate unix timestamp
+
+1. Make a input file u.data:
+
+1	101	8	1369721454
+2	102	8	1369821454
+3	103	8	1369921454
+4	105	8	1370021454
+5	106	9	1370121454
+
+2. Put it into hdfs:
+
+hadoop fs -put u.data hdfs:/
+hadoop fs -ls /
+
+3. Create weekday_mapper.py:
+
+import sys
+import datetime
+for line in sys.stdin:
+	line = line.strip()
+	userid, movieid, rating, unixtime = line.spilt('\t')
+	weekday = datetime.datetime.fromtimestamp(float(unixtime)).isoweekday()
+	print '\t'.join([userid, movieid, rating, str(weekday)])
+
+4. Put it into hdfs:
+
+hadoop fs -put weekday_mapper.py hdfs:/
+hadoop fs -ls /
+
+5. Open hive terminal: 
+
+hive>create table u_data (userid int, movieid int, rating int, unixtime string) row format delimited fields terminated by '\t';
+
+And load it into the table that was just created:
+hive>load data inpath '/u.data' into table u_data;
+
+Count the number of rows in table u_data:
+hive>select count(*) from u_data;
+
+hive>create table u_data_new (userid int, movieid int, rating int, weekday int) row format delimited fields terminated by '\t';
+
+hive>add file weekday_mapper.py;
+
+Note that columns will be transformed to string and delimited by TAB before feeding to the user script, and the standard output of the user script will be treated as TAB-separated string columns.
+
+The following commmand uses the TRANSFORM clause to embed the mapper scripts.
+
+hive>insert overwrite table u_data_new select transform (userid, movieid, rating, unixtime) using 'python weekday_mapper.py' as (userid, movieid, rating, weekday) from u_data;
+
+hive>select weekday, count(*) from u_data_new group by weekday;
+
+***********************************************************************************************************************************************************************

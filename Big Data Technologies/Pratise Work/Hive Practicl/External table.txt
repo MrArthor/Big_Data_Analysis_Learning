@@ -1,0 +1,152 @@
+To clear hive screen : !clear;
+
+***********************************************************************************************************************************************************************
+INSERT INTO TABLE student VALUES ('Vk',21,'95'),('ekshat', 2 , '96'),('Deruv',3,'90');
+*********************************************
+
+Q2. External Table:
+
+create a directory at HDFS 
+
+1. Make practice directory:
+
+hadoop fs -mkdir /hivedata
+put the data file in this directory
+
+hadoop fs -put /home/cloudera/Desktop/sample.txt /hivedata
+
+
+2. Open hive terminal: and make external table:
+hive> create external table emplist (fname string,gender string ,salary int, team string)  
+    > row format delimited  
+    > fields terminated by ',' 
+    > location '/hivedata';  
+
+We do not need load command here because location is already specified in create command.
+
+hive>select * from info;
+
+to select data from the table using condition :
+
+hive>select *from emplist where gender ='Male';
+
+Alter the table *************************************************************
+
+1.Rename a Table
+synatx: Alter table old_table_name rename to new_table_name;  
+Example: alter table emplist rename to emplist1;
+
+2.Adding column in table
+syntax: Alter table table_name add columns(column_name datatype);  
+example : alt table emplist1 add columns(age int);
+check whether scehma has been updated or not
+hive>describe emplist1;
+
+3.Change Column name from a dataset
+Syntax:Alter table table_name change old_column_name new_column_name  datatype; 
+hive>  Alter table emplist1 change fname candidatename string;
+
+4.Delete or Replace Column : The REPLACE  is used to remove all the existing columns from the table. The  columns which are added in the TABLE REPLACE statement will be replaced with the older columns.
+
+Hive> ALTER TABLE emplist1 REPLACE COLUMNS (first_name STRING);
+
+
+***********************************************************************************************************************************************
+Note : Hive only supports Equi-Joins. i.e. Joins can only be performed with equal(=) sign only. Greater than(>), less than (<) or not equal
+(< >) in join is not supported in HIVE.
+Join Command in Hive:
+
+1.Take 2 file as per your wish 
+
+2. put these file into hdfs
+
+hadoop fs -put emp.txt hdfs:/
+hadoop fs -put email.txt hdfs:/
+hadoop fs -ls /
+
+3. Open hive shell:
+
+a) inner join :Fetches the rows which are common to both tables.
+***************create table1 emp and table 2 email2 using the hive terminal
+
+hive>create table updatedata (empid string, name string, salary int, address string) 
+row format delimited 
+fields terminated by ',';
+hive> create table email50 (empid string, email string, Hno string, address string) 
+row format delimited 
+fields terminated by ',';
+
+*********load the data using load command in table1 emp and table 2 email2 Hive
+hive>load data inpath '/detail.csv' into table emp50;
+
+********** inner join work
+hive> SELECT emp1.empid, emp1.fname, email2.email
+    > from emp1
+    > inner join email2
+    > on emp1.empid = email2.empid;
+
+*****************************************************
+Left Join : Fetches all rows from the left table and only common rows from the right one.
+
+**********************************************************************
+hive>create table emp (name string, salary int, address string) 
+row format delimited 
+fields terminated by ',';
+
+*********load the data using load command in table1 emp and table 2 email2 Hive
+hive>load data inpath '/emp.txt' into table emp;
+********************** left join
+hive> SELECT emp1.empid, emp1.fname, email2.email
+    > from emp1
+    > left join email2
+    > on emp1.empid = email2.empid;
+
+**********************************************************************
+Right Join : Fetches all rows from the right table and only common rows from the left one.
+***********************************************************************
+
+hive>create table emp (name string, salary int, address string) 
+row format delimited 
+fields terminated by ',';
+
+*********load the data using load command in table1 emp and table 2 email2 Hive
+hive>load data inpath '/emp.txt' into table emp;
+**********************
+hive> SELECT emp1.empid, emp1.fname, email2.email
+    > from emp1
+    > right join email2
+    > on emp1.empid = email2.empid;
+*******************************************************************************
+Full Outer Join : Fetches all rows from the left and right table if there is a common row.
+*************************************************************************************
+hive>create table emp (name string, salary int, address string) 
+row format delimited 
+fields terminated by ',';
+
+*********load the data using load command in table1 emp and table 2 email2 Hive
+hive>load data inpath '/emp.txt' into table emp;
+********************** 
+hive> SELECT emp1.empid, emp1.fname, email2.email
+    > from emp1
+    > Full Outer Join email2
+    > on emp1.empid = email2.empid;
+
+*************************************************
+Left Semi Join : Fetches rows only from the left table after matching the key column with the right table.
+The Left Semi Join fetches rows only from the left table after matching the key column with the right table. The difference between left join and left semi join is left join fetches all the column from left table and also the matching contents of right table is displayed but left semi join fetches records from the left table only which matches with the key column.
+
+
+hive>create table emp (name string, salary int, address string) 
+row format delimited 
+fields terminated by ',';
+
+*********load the data using load command in table1 emp and table 2 email2 Hive
+hive>load data inpath '/emp.txt' into table emp;
+********************** 
+hive> SELECT emp1.empid, emp1.fname, email2.email
+    > from emp1
+    > Left Semi Join email2
+    > on emp1.empid = email2.empid;
+
+*******************************************************
+

@@ -1,0 +1,108 @@
+1.Operators : four types of operators in Hive:
+create external table listn(empid int,fname string,gender string ,salary int, team string)  
+row format delimited  
+fields terminated by ',' 
+location '/hivedata'; 
+
+
+A.Relational Operators: <,>,<=,>=,=,==,!=, 
+
+hive> SELECT * FROM list WHERE team>=40000;
+hive> select *from list where fname=67;
+
+
+B.Arithmetic Operators
++,-,*,/ for performing matmatical calculations
+hive>select fname, team + 50 from list limit 10;  \\ it will add 50 rs in each employe salary
+hive>select fname, team - 50 from list limit 10;   
+hive>select fname, team * 50 from list limit 10; 
+hive>select fname, (team*12) /100 from list limit 10;  // to calculate the 12% Pf from the employe salary
+   
+C.Logical Operators
+A AND B	boolean	TRUE if both A and B are TRUE, otherwise FALSE.
+A OR B	boolean	TRUE if either A or B or both are TRUE, otherwise FALSE.
+!A [<>]	boolean	Same as NOT A.  // wil use the symbol in hive
+
+hive> SELECT * FROM list WHERE team>40000 and fname=67;
+hive> SELECT * FROM list WHERE team>40000 or fname=67;
+hive> select fname from list where fname <> 67; or
+hive> select fname from list where fname!= 67; 
+
+****************************Functions****************************
+
+1.round() function:
+hive> SELECT round(team) from list;           // output is 3.0
+   ROUND(13.567,0,1)   -- 13.000  -- Ones place
+    ROUND(13.567,-1,1), -- 10.000  -- Tens place
+    ROUND(13.567,2,1)   -- 13.560  -- Hundredths place
+
+2.floor() function
+hive> SELECT round(team) from list;            // output is 2.0
+3.ceil() function             
+hive> SELECT ceil(team) from list;         // output is 3.0   
+   CEILING(13.5),  -- 14
+    CEILING(13.8),  -- 14
+    CEILING(13.2)   -- 14
+
+
+***************Drop a Table************************
+When you drop a table from Hive Metastore, it removes the table/column data and their metadata. It can be a normal table (stored in Metastore) or an external table***********************
+hive> DROP TABLE IF EXISTS emp;
+hive> SHOW TABLES;
+
+*********Querying Data-Sorting***********************
+
+A.Select-Order By : The ORDER BY clause is used to retrieve the details based on one column and sort the result set by ascending or descending order.
+
+hive> SELECT fname,salary FROM list ORDER BY fname limit 10;
+
+B. Group by : The GROUP BY clause is used to group all the records in a result set using a particular collection column. It is used to query a group of records.
+hive> SELECT team, sum(empid) FROM listn GROUP BY team limit 10;
+
+
+C.HAVING CLAUSE:use to apply constraints on the group of data produced by GROUP BY clause. 
+
+hive> select team, sum(team) from list group by team having sum(team)>=35000 limit 10;
+
+
+****************4.Aggregating :sum(), average(),min(),max(), upper(),lower(),desc**********************
+A. hive> select sum(team) from list;
+B. hive>select avg(salary) from list;
+c. hive>select min(salary) from list;
+d. hive>select max(salary) from list;
+e. hive>select Id, upper(Name) from employee_data;        // upper name
+f. hive>select Id, lower(Name) from employee_data;  
+g. hive> select * from list order by salary desc; 
+ 
+**********************5.Views****************************
+A view allows a query to be saved and treated like a table. It is a logical construct, as it does not store data like a table.
+****************************
+step1: create a table in hive Step2:
+Step2:Create a view-
+hive>CREATE VIEW temp AS
+SELECT * FROM listn
+WHERE salary>30000;
+
+Step3:to check the data in view
+*********************************
+select *from emp123 limit 10;  // emp123 is the view name
+
+Step4:Dropping a View*****************
+hive> DROP VIEW emp;
+******************************************************
+6.Hive DML (Data manipulation with Hive) :Data Manipulation Language is used to insert, update, delete, and fetch data from Hive tables.
+GROUP BY, LOAD DATA/insert,SELECT,create, order by, group by, where,Inner Join,Left Outer Join,Right Outer Join,Full Outer Join
+*********************************************
+-------------insert data--------------------
+insert into update1 select * from list;
+insert into updatedata(empid,name,salary,address) values("150A", "Mohit",200000,"Delhi");
+
+check the data---------------------------
+select *from update2;
+
+
+***********Note: On Transactional session, all operations are auto commit as BEGIN, COMMIT, and ROLLBACK are not yet supported**************
+
+7******Hive DDL*******************************
+create database, drop database, create table ,drop table,alter table,create view
+

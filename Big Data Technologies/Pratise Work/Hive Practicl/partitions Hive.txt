@@ -1,0 +1,91 @@
+1.A.Partitions 
+*****Static Partitoning**************: 
+Step 1: Create a data base in hive and use it.
+Step2: Create the table and provide the partitioned columns:
+ 
+create table stud2(empid int, fname string, gender string,  team string)   
+partitioned by (department string)  
+row format delimited  
+fields terminated by ',';  
+
+Step 3: Load the data into the table and pass the values of partition columns
+
+load data inpath '/detail.csv' into table stud1   /* so two partitions has been created here, you can create many partitions as per you need
+partition(department= "Finance");
+
+load data inpath '/detail.csv' into table stud  
+partition(department= "Product"); 
+
+******* TO fetch data from the partitions
+
+select * from stud limit 10; 
+select * from stud where department = 'Product' limit 10; 
+select * from stud where department = 'Finance' limit 10; 
+
+********Dynamic Partitoning********: Enable the dynamic partition : -
+a.set hive.exec.dynamic.partition=true;   
+b.set hive.exec.dynamic.partition.mode=nonstrict; 
+
+Step1: select the database in which we want to create a table.
+Step2: Create the dummy table and load data in this table:
+hive> create table stud_test1(empid int, fname string, gender string,  team string, department string)   
+row format delimited  
+fields terminated by ',';  
+
+Step3: Now, load the data into the table.
+load data inpath '/hivedata/detail.csv' into table stud
+
+Step4: Create a partition table 
+hive> create table stud_data1(empid int, fname string, gender string,  team string)   
+partitioned by (department string)  
+row format delimited  
+fields terminated by ','; 
+
+Step5:  insert the data of dummy table into the partition table.
+hive> insert into stud_data1  
+partition(department)  
+select empid, fname, gender, team,department  
+from stud_test1;  
+
+step6:retrieve the entire data of the table by using the following command
+select *from stud_data where department ='Finance' limit 10;
+
+************Bucketing******************
+
+
+
+Step1: select the database in which we want to create a table.
+
+Step2: Create the dummy table and load data in this table:
+
+hive> create table stud_te1(empid int, fname string, gender string,  team string)   
+row format delimited  
+fields terminated by ',';  
+
+Step3: Now, load the data into the table.
+load data inpath '/hivedata/detail.csv' into table stud_te1
+
+set the hive properties:
+   
+hive>set hive.exec.dynamic.partition.mode=nonstrict;
+hive>set hive.exec.dynamic.partition=true;
+hive>set hive.enforce.bucketing=true;
+
+
+Step 4: Create a bucketing table 
+create table stud_bucket2(empid int, fname string, gender string,  team string)    
+clustered by (empid) into 4 buckets  
+row format delimited    
+fields terminated by ',' ;   
+
+step 5: Now, insert the data of dummy table into the bucketed table.
+
+insert overwrite table stud_bucket select * from stud_te;   
+
+Step6: Check in warehouse of hive in hdfs terminal:
+
+ a) hadoop fs -ls /user/hive/warehouse/test.db
+ b) hadoop fs -ls /user/hive/warehouse/test.db/stud_bucket2;
+******************************************************************************************
+
+

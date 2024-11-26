@@ -1,0 +1,39 @@
+To clear hive screen : !clear;
+
+Q1. Run the following commands:
+
+1. make a sample.txt
+
+sample .txt
+1, arun
+2, mary
+3, john
+4, priti
+5, neha
+
+2. put it into hdfs
+
+hadoop fs -put cdac.txt hdfs:/
+hadoop fs -ls /
+
+
+3. enter into hive shell by typing hive.
+
+4. run the following commands:
+
+hive>show databases;
+hive>create database cdac2;
+hive>show databses;
+hive>use cdac2;
+
+hive>create table sample (id int, name string) row format delimited fields terminated by ',';
+hive>load data inpath '/sample.txt' into table sample;
+hive>select * from sample;
+
+5. Check hive warehouse
+
+hadoop fs -ls /user/hive/warehouse
+hadoop fs -ls /user/hive/warehouse/test.db
+hadoop fs -ls /user/hive/warehouse/test.db/sample/sample.txt
+hadoop fs -cat /user/hive/warehouse/test.db/sample/sample.txt
+
