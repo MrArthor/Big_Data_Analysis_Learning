@@ -1,0 +1,54 @@
+************Work with Spark SQL**************************:
+
+Step1: Open spark and start Pyspark API using command pyspark at spark terminal
+*****************************************************************
+from pyspark.sql import SparkSession                     // create the spark session:To create a basic SparkSession,use SparkSession.builder:
+spark = SparkSession \
+    .builder \
+    .appName("We are working on Spark SQL") \
+    .config("spark.some.config.option", "some-value") \
+    .getOrCreate()
+*****************************************************************************
+df = spark.read.json("C:/Users\PRAVEEN\OneDrive\Desktop\emp.json")
+
+df.show()
+****************************************************************
+df = spark.read.csv("D:\prac\detail.csv")
+            or 
+df = spark.read.load("D:/prac/detail.csv", format="csv")
+df.show()
+*****************************************************************************
+df.printSchema()
+
+df.select("name").show()
+
+df.select(df['name'], df['salary'] + 500).show()              # perform the aggregation
+**************************************************************************************
+
+df.select(df['_c0'], df['_c2'] + 500).show()            # it will use column name as its index in pandas 
+
+*****************************************************************************
+df.filter(df['salary'] > 3000).show()                 // filter method 
+
+******************************************************************************
+df.groupBy("name").count().show()                             # perform the groupby operation
+****************************************************************************
+
+# Creation of Temporary view
+df.createOrReplaceTempView("test")
+df1 = spark.sql("SELECT * FROM test")
+df1.show()
+
+**********Global Temporary View******************8
+
+Temporary views in Spark SQL are session-scoped and will disappear if the session that creates it terminates. If you want to have a temporary view that is shared among all sessions and keep alive until the Spark application terminates then we can use Global Temporary View.
+
+# Register the DataFrame as a global temporary view
+
+df.createGlobalTempView("cdac")
+
+spark.sql("SELECT * FROM global_temp.people").show()
+
+spark.newSession().sql("SELECT * FROM global_temp.people").show()
+
+
