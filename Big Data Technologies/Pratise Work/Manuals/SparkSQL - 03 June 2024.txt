@@ -29,7 +29,7 @@ df.select(df['_c0'], df['_c2'] + 500).show()            # it will use column nam
 
 *****************************************************************************
 df.filter(df['salary'] > 3000).show()                 // filter method 
-
+df.filter(df['salary'] > 3000).select(df['name'], df['salary'] + 500).show()  
 ******************************************************************************
 df.groupBy("name").count().show()                             # perform the groupby operation
 ****************************************************************************
